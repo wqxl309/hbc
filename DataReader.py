@@ -29,15 +29,43 @@ class DBreader:
     def _dataProcess(self,rawdata):
             pass
 
-    def csv2db(self,trainORtest):
+    def csv2db(self,trainORtest,name):
+        def strtrans(x):
+            x = str(x)
+            x = x.strip()
+            x = x.replace('\\','')
+            return '\''+x+'\''
+        def listtrans(x):
+            x = str(x)
+            x = x.replace('[','')
+            x = x.replace(']','')
+            x = x.replace('\'','')
+            return '\''+x+'\''
         dbname = '_'.join(['hbc',trainORtest])
         conn = self._getConn_(dbname=dbname)
         cursor = conn.cursor()
         datapath = os.path.join('.\data',trainORtest)
-        rawdata = {}
-        for nm in Info.tableinfo:
-            file = os.path.join(datapath,''.join([nm,'_',trainORtest,'.csv']))
-            rawdata[nm] = pd.read_csv(file).values
+        file = os.path.join(datapath,''.join([name,'_',trainORtest,'.csv']))
+        data = pd.read_csv(file)
+        colinfo = Info.tableinfo[name]['cols']
+        for cl in colinfo:
+            print(cl)
+            if 'TEXT' in colinfo[cl]:
+                data[cl] = data[cl].map(strtrans)
+        if name=='userComment':
+            data['commentsKeyWords'] = data['commentsKeyWords'].map(listtrans)
+        data = data.values
+        # for dumi in range(data.shape[0]):
+        #     if '60' in data[dumi,3]:
+        #         print(data[dumi,:])
+        self.update_db(conn=conn,
+                       dbname=dbname,
+                       data=data,
+                       tablename=name,
+                       colinfo=colinfo,
+                       prmkey=Info.tableinfo[name]['prmkey'],
+                       if_exist='replace'
+                       )
 
 
     def update_db(self,conn,dbname,data,tablename,colinfo,prmkey=None,if_exist='nothing',chunksize=1000):
@@ -90,7 +118,11 @@ class DBreader:
                     chunkdata = data[head:tail,:]
                     toinsert = ','.join([''.join(['(',','.join(['{'+'{0}'.format(i)+'}' for i in range(colnum)]),')']).format(*rowdata) for rowdata in chunkdata])
                     exeline = ''.join([insertline,toinsert])
-                    cursor.execute(exeline)
+                    try:
+                        cursor.execute(exeline)
+                    except BaseException as e:
+                        print(chunkdata)
+                        raise e
             except BaseException as e:
                 if (hastable and if_exist=='replace') or (not hastable): # 需要创建新表格的情况下
                     cursor.execute('DROP TABLE {0}'.format(tablename))  # 如果更新失败需要确保表格删除
@@ -103,4 +135,5 @@ class DBreader:
 
 if __name__=='__main__':
     obj = DBreader()
-    obj.csv2db('test')
+    obj.csv2db('train','userComment')
+    # print("['很','好','很','主动','中']")

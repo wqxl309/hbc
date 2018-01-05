@@ -2,35 +2,33 @@
 class Info:
 
     tableinfo = {
-        'action':{'cols':{'userid':'INT UNSIGNED NOT NULL',
-                          'actionType':'INT(2) UNSIGINED',
-                          'actionDate':'INT(8) UNSIGNED',
-                          'actionTime':'INT(6) UNSIGNED'},
-                  'prmkey':['userid','actionDate','actionTime']},
+        'action':{'cols':{'userid':'BIGINT UNSIGNED NOT NULL',
+                          'actionType':'INT(2) UNSIGNED',
+                          'actionTime':'INT UNSIGNED'},
+                  'prmkey':['userid','actionTime']},
 
-        'orderHistory':{'cols':{'userid':'INT UNSIGNED NOT NULL',
+        'orderHistory':{'cols':{'userid':'BIGINT UNSIGNED NOT NULL',
                                 'orderid':'INT UNSIGNED NOT NULL',
-                                'orderDate':'INT(8) UNSIGNED',
-                                'orderTime':'INT(6) UNSIGNED',
+                                'orderTime':'INT UNSIGNED',
                                 'orderType':'INT(2) UNSIGNED',
                                 'city':'TEXT',
                                 'country':'TEXT',
                                 'continent':'TEXT'},
                         'prmkey':['orderid']},
 
-        'orderFuture':{'cols':{'userid':'INT UNSIGNED NOT NULL',
+        'orderFuture':{'cols':{'userid':'BIGINT UNSIGNED NOT NULL',
                                'orderType':'INT(2) UNSIGNED'},
                        'prmkey':['userid','orderType']},
 
-        'userComment':{'cols':{'userid':'INT UNSIGNED NOT NULL',
+        'userComment':{'cols':{'userid':'BIGINT UNSIGNED NOT NULL',
                                'orderid':'INT UNSIGNED NOT NULL',
                                'rating':'FLOAT',
                                'tags':'TEXT',
                                'commentsKeyWords':'TEXT'},
                        'prmkey':['orderid']},
 
-        'userProfile':{'cols':{'userid':'INT UNSIGNED NOT NULL',
-                               'gender':'TEXT',
+        'userProfile':{'cols':{'userid':'BIGINT UNSIGNED NOT NULL',
+                               'gender':'TEXT' ,
                                'province':'TEXT',
                                'age':'TEXT'},
                        'prmkey':['userid']}
