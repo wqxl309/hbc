@@ -22,13 +22,6 @@ class DBreader:
         print('connected to {0}'.format(dbname))
         return conn
 
-    def timetrans(self,seconds):
-        bjtime = time.localtime(seconds)
-        return time.strftime("%Y%m%d %H%M%S",bjtime)
-
-    def _dataProcess(self,rawdata):
-            pass
-
     def csv2db(self,trainORtest,name):
         def strtrans(x):
             x = str(x)
@@ -135,5 +128,5 @@ class DBreader:
 
 if __name__=='__main__':
     obj = DBreader()
-    obj.csv2db('train','userComment')
+    obj.csv2db('train','action')
     # print("['很','好','很','主动','中']")
