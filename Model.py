@@ -1,5 +1,5 @@
 import os
-mingw_path = r'C:\Program Files\mingw-w64\x86_64-7.1.0-posix-seh-rt_v5-rev2\mingw64\bin'
+mingw_path = r'C:\My Programs\mingw64\mingw64\bin'
 os.environ['PATH'] = mingw_path + ';' + os.environ['PATH']
 from xgboost import DMatrix
 from xgboost import XGBRegressor
@@ -29,15 +29,9 @@ class BaseModel:
         cursor.execute('USE {0};'.format(dbname))
         print('connected to {0}'.format(dbname))
 
-        cursor.execute('SELECT province FROM featuresall')
-        provdict = {}
-        for num,prov in enumerate(set([c[0] for c in cursor.fetchall()])):
-            provdict[prov] = num
 
         cursor.execute('SELECT * FROM featuresall')
         rawdata = pd.DataFrame(cursor.fetchall())
-        rawdata = rawdata.fillna(0)
-        rawdata[2] = rawdata[2].map(lambda x: -1 if x=='nan' else provdict[x])
 
         trainData = rawdata.sample(frac=0.8)
         testData = rawdata.iloc[list(set(rawdata.index.values)-set(trainData.index.values))]
